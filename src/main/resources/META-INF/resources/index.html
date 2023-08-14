@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Labseq Request a Number</title>
+    <style>
+        .boxed-div {
+            position: relative;
+            text-align: center;
+            vertical-align: middle;
+            top: 50px;
+            border:1px solid midnightblue;
+        }
+
+        input {
+            text-align: center;
+            border:1px solid cyan;
+        }
+    </style>
+</head>
+<body>
+<div class="boxed-div">
+    <label for="idx"></label>>
+    <input type="number" name="idx" id="idx" pattern="[0-9]*">
+    <button type="button" id="submit">Get labseq value</button>
+    <div>
+        Value: <span id="labseq"></span>
+    </div>
+</div>
+<div hidden="hidden" class="boxed-div" id="history" >
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script>
+    const url = window.location.href + "exer/labseq/"
+    function splitNumberStringIntoManyLines(numberString, quantityOfNumbersPerLine) {
+        let stringWithSplits = '';
+        let lines = 1;
+        for(let idx = 0; idx < numberString.length; idx += 4){
+            stringWithSplits += numberString.slice(idx, idx + 4);
+            if(stringWithSplits.length > quantityOfNumbersPerLine*lines) {
+                lines += 1;
+                stringWithSplits += "\n";
+            }else{
+                stringWithSplits += " ";
+            }
+        }
+        return stringWithSplits;
+    }
+
+    $("#submit").click(function (){
+        let n = $("#idx").val();
+
+        $.ajax({
+            url: url + n,
+            type:"GET",
+            success:function(data){
+                let numberString = splitNumberStringIntoManyLines(data['result'], 55)
+                $("#labseq").html(numberString);
+                hidden_attr = $("#history").attr("hidden")
+                if(typeof hidden_attr !== 'undefined' && hidden_attr !== false){
+                    $("#history").removeAttr("hidden")
+                }
+                $("#history").append("<div class='boxed-div'> " + n.toString() + " -> " + numberString + "</div>" + "")
+
+            },
+            error:function(){
+                console.log("Bad request, unable to say why.");
+            }
+        });
+    })
+</script>
+</html>
