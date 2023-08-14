@@ -1,0 +1,2 @@
+# labseqExercise
+Labseq Quarkus Exercise
